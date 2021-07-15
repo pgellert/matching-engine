@@ -34,5 +34,5 @@ Chapter 3 of my dissertation has more context on these results and how they were
 ## Useful links:
 
  - [Raft paper](https://web.stanford.edu/~ouster/cgi-bin/papers/raft-atc14.pdf)
- - [My dissertation]()
+ - [My dissertation](dissertation.pdf)
 
