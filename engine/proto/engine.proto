@@ -1,0 +1,58 @@
+// --> rpc put (OrderRequest) returns (OrderResponse);
+// --> rpc modify (OrderRequest) returns (OrderResponse);
+// --> rpc cancel (OrderRequest) returns (OrderResponse);
+// <-- rpc executed (TransactionDetails) returns (Empty);
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package engine;
+
+service MatchingEngineRPC {
+  rpc limit_order_queue(stream Order) returns (google.protobuf.Empty);
+  rpc cancel_order_queue(stream CancelOrder) returns (google.protobuf.Empty);
+  rpc register_order_acknowledgements (Client) returns (stream OrderAcknowledgement);
+  rpc register_trades (Client) returns (stream Trade);
+}
+
+message Client{
+  uint64 client_id = 1;
+}
+
+message Order {
+  uint64 client_id = 1;
+  uint64 seq_number = 2;
+  uint64 security_id = 3;
+  uint64 price = 4;
+  uint64 size = 5;
+  OrderSide side = 7;
+}
+
+message CancelOrder {
+  uint64 client_id = 1;
+  uint64 seq_number = 2;
+  uint64 security_id = 3;
+  uint64 cancel_order_seq_number = 4;
+  OrderSide side = 5;
+}
+
+enum OrderSide {
+  BUY = 0;
+  SELL = 1;
+}
+
+message OrderAcknowledgement {
+  // the original order
+  uint64 client_id = 1;
+  uint64 seq_number = 2;
+  // true if order was placed false if have to retry with [leader_id]
+  bool success = 3;
+}
+
+message Trade {
+  Order order = 1;
+  uint64 execution_price = 2;
+  uint64 execution_volume = 3;
+}
+
+

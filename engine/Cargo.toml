@@ -1,0 +1,39 @@
+[package]
+name = "engine"
+version = "0.1.0"
+authors = ["Gellért Peresztegi-Nagy <gp454@cam.ac.uk>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+prost = "0.6.1"
+tokio = { version = "0.2.22", features = ["full"] }
+tokio-stream = "0.1.2"
+tonic = "0.3.1"
+raft = { path = "../raft" }
+tracing = "0.1.22"
+tracing-subscriber = "0.2.0"
+tracing-futures = "0.2.4"
+futures = "0.3.8"
+async-trait = "0.1.42"
+rand = "0.8.3"
+adaptive-radix-tree = { git = "https://github.com/pgellert/adaptive-radix-tree", branch = "main" }
+
+[build-dependencies]
+tonic-build = "0.3.1"
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "order_book"
+harness = false
+
+[[bin]]
+name = "me_server"
+path = "src/server.rs"
+
+[[bin]]
+name = "me_client"
+path = "src/client.rs"

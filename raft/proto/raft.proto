@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package raft;
+
+service RaftRPC {
+  rpc request_vote (VoteRequest) returns (VoteResponse);
+  rpc append_entries (AppendEntriesRequest) returns (AppendEntriesResponse);
+}
+
+
+// Vote RPC arguments
+message VoteRequest {
+  // Candidate's term
+  uint64 term = 1;
+  // Candidate requesting vote
+  uint64 candidate_id = 2;
+  // Index of candidate's last log entry
+  // NB: should have type usize, but Protobuf does not support usize
+  uint64 last_log_index = 3;
+  // Term of candidate's last log entry
+  uint64 last_log_term = 4;
+}
+
+message VoteResponse {
+  // Current term for candidate to update itself
+  uint64 term = 1;
+  // true means candidate received vote
+  bool vote_granted = 2;
+}
+
+
+// AppendEntries RPC arguments
+message AppendEntriesRequest {
+  // Leader's term
+  uint64 term = 1;
+  // So follower can redirect request
+  uint64 leader_id = 2;
+  // Index of log entry immediately preceding new ones
+  // NB: should have type usize, but Protobuf does not support usize
+  uint64 prev_log_index = 3;
+  // Term of prev_log_index entry
+  uint64 prev_log_term = 4;
+  // Log entries to store (empty for heartbeat;
+  // may send more than one for efficiency)
+  repeated LogEntry entries = 5;
+  // Leader's commit index
+  uint64 leader_commit = 6;
+}
+
+message AppendEntriesResponse {
+  // Current term for leader to update itself
+  uint64 term = 1;
+  // true if follower contained entry matching prev_log_index and prev_log_term
+  bool success = 2;
+}
+
+message LogEntry{
+  uint64 term = 1;
+  uint64 index = 2;
+  Command command = 3;
+}
+
+message Command{
+  CommandType type = 1;
+  uint64 sequence_id = 2;
+  uint64 price = 3;
+  uint64 client_id = 4;
+  uint64 size = 5;
+  uint64 security_id = 6;
+  OrderSide side = 7;
+  uint64 cancel_order_id = 8;
+}
+
+enum CommandType {
+  LIMIT = 0;
+  CANCEL = 1;
+}
+
+enum OrderSide {
+  BUY = 0;
+  SELL = 1;
+}
